@@ -1,1 +1,22 @@
+name: Sync Eurostat Data
+on:
+  workflow_dispatch: # Allows you to run this manually with one click
 
+jobs:
+  download:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Fetch Data
+        run: |
+          curl -L "https://ec.europa.eu/eurostat/api/dissemination/sdmx/3.0/data/dataflow/ESTAT/migr_asypenctzm/1.0?compress=true&format=csvdata&formatVersion=2.0&lang=en&labels=name" -o asylum_pending_cases.csv
+
+      - name: Save to Repo
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+          git add asylum_pending_cases.csv
+          git commit -m "Updated Eurostat data file" || exit 0
+          git push
