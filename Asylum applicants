@@ -1,0 +1,24 @@
+name: Update Eurostat Data
+on:
+  schedule:
+    - cron: '0 0 * * 1' # Runs every Monday at midnight
+  workflow_dispatch: # Allows you to run it manually
+
+jobs:
+  download:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Download Data
+        run: |
+          curl -L "https://ec.europa.eu/eurostat/api/dissemination/sdmx/3.0/data/dataflow/ESTAT/migr_asyappctza/1.0?compress=true&format=csvdata&formatVersion=2.0&lang=en&labels=name" -o eurostat_data.csv
+
+      - name: Commit and Push
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+          git add eurostat_data.csv
+          git commit -m "Updated Eurostat data" || echo "No changes"
+          git push
